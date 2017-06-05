@@ -1,0 +1,111 @@
+{
+  "deployment": {
+    "name": "staging"
+  },
+  "environment": {
+    "name": "adp"
+  },
+  "network" :
+  {
+    "availability_zones" :[
+       {
+           "name" : "us-east-1a",
+           "subnet" : "10.1.5.0/24"
+       },
+       {
+           "name" : "us-east-1c",
+           "subnet" : "10.1.6.0/24"
+       }
+    ]
+  },
+  "apiHosts" :[
+       {
+           "id" : "ggg",
+           "size" : "t2.micro",
+           "location" :
+               {
+                   "availability_zone" : "us-east-1a"
+               },
+            "services" : [
+                    "InsureonDocumentMapping",
+                    "NoodleDocumentMapping"
+            ]
+       },
+       {
+           "id" : "hhh",
+           "size" : "t2.small",
+           "public_url": "docwizard",
+           "location" :
+               {
+                   "availability_zone" : "us-east-1c"
+               },
+            "services" : [
+                    "InsureonDocumentMapping"
+            ]
+       }
+  ],
+  "apiServices" : {
+    "configurationDefaults" : 
+    {
+      "port" : "80",
+      "domain" : "node.consul.insureondev.com"
+    }
+    ,
+    "services" : [
+       {
+            "name" : "InsureonDocumentMapping",
+            "artifact" : "Ion.DocumentMapping.WebAPI.Server",
+            "version" : "9bde9a71fbde9d428a4da159edf3bfbb6a3888a3",
+            "configuration" : 
+              {
+                "instance" : "primary",
+                "writePdfs" : "true"
+              }
+            ,
+            "secrets" : [
+                "gitKey"
+            ],
+            "awsKeys" : [
+                "s3"
+            ]
+       },
+       {
+            "name" : "NoodleDocumentMapping",
+            "artifact" : "Ion.DocumentMapping.WebAPI.Server",
+            "version" : "9bde9a71fbde9d428a4da159edf3bfbb6a3888a3",
+            "configuration" : 
+              {
+                "instance" : "primary",
+                "writePdfs" : "false"
+              }
+            ,
+            "secrets" : [
+                "gitKey"
+            ],
+            "awsKeys" : [
+                "s3"
+            ]
+       }
+    ]
+  },
+  "ui": {
+    "applications": [
+      {
+        "size" : "t2.micro",
+        "location" :
+            {
+               "availability_zone" : "us-east-1",
+               "subnet" : "private"
+            },
+        "name": "Authorization.UI",
+        "instance": "primary",
+        "version": "v0.3",
+        "services": [
+          {
+            "service": "primary_documentmapping"
+          }
+        ]
+      }
+    ]
+  }
+}
